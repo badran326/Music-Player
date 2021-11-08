@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Badran Player</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="this_is_song_name">This is song name</string>
+    <string name="this_is_song_artist">This is song artist</string>
+</resources>
