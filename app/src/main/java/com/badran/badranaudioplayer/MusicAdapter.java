@@ -1,6 +1,7 @@
 package com.badran.badranaudioplayer;
 
 
+import static com.badran.badranaudioplayer.MainActivity.close;
 import static com.badran.badranaudioplayer.PlayerActivity.mIsPlaying;
 
 import android.annotation.SuppressLint;
@@ -33,10 +34,9 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyVieHolder>
 
 
     private final Activity mContext;
-    static ArrayList<MusicFiles> mFiles;
+    public static ArrayList<MusicFiles> mFiles;
     static MyDatabase db;
     static long songsCount;
-    Bitmap bitmap;
     static int colorPosition = 0;
 
 
@@ -55,26 +55,38 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyVieHolder>
     @Override
     public void onBindViewHolder(@NonNull MyVieHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.file_name.setText(mFiles.get(position).getTitle());
-//        byte[] image = getAlbumArt(mFiles.get(position).getPath());
-//        if (image != null) {
-//            bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-//
-//            Glide.with(mContext).asBitmap()
-//                    .load(ImageHelper.getRoundedCornerBitmap(bitmap, 1000))
-//                    .into(holder.album_art);
-//        }
-//        else {
-//            Drawable drawable = AppCompatResources.getDrawable(mContext, R.drawable.ic_baseline_play_arrow);
-//        if (drawable != null) {
-//            bitmap = ((BitmapDrawable)drawable).getBitmap();
-//        }
-        Glide.with(mContext)
-                    .load(R.drawable.ic_baseline_play_arrow)
-                    .into(holder.album_art);
-//        }
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                byte[] image = getAlbumArt(mFiles.get(position).getPath());
+                if (image != null) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    Bitmap resized = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
+                    holder.album_art.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(mContext)
+                                    .load(ImageHelper.getRoundedCornerBitmap(resized, 300))
+                                    .into(holder.album_art);
+                        }
+                    });
+                } else {
+                    holder.album_art.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(mContext)
+                                    .load(R.drawable.ic_baseline_play_arrow)
+                                    .into(holder.album_art);
+                        }
+                    });
+                }
+            }
+        });
+              t1.start();
         holder.itemView.setOnClickListener(view -> {
             colorPosition = position;
             mIsPlaying = true;
+            close = false;
             Intent intent = new Intent(mContext, PlayerActivity.class);
             intent.putExtra("position", position);
             mContext.startActivityForResult(intent, 1);
@@ -95,7 +107,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyVieHolder>
             });
         });
     }
-    private void deleteFile (int position, View view) {
+
+    private void deleteFile(int position, View view) {
         Uri contentUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, Long.parseLong(mFiles.get(position).getIds()));
         File file = new File(mFiles.get(position).getPath());
         boolean deleted = file.delete();
@@ -131,7 +144,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyVieHolder>
     }
 
     private void deleteFavorite() {
-            Toast.makeText(mContext, "Error Delete From Favorite", Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "Error Delete From Favorite", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -151,15 +164,17 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyVieHolder>
             menuMore = itemView.findViewById(R.id.menuMore);
         }
     }
-    private byte[] getAlbumArt (String uri) {
+
+    private byte[] getAlbumArt(String uri) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(uri);
         byte[] art = retriever.getEmbeddedPicture();
         retriever.release();
         return art;
     }
+
     @SuppressLint("NotifyDataSetChanged")
-    void updateList (ArrayList<MusicFiles> musicFilesArrayList) {
+    void updateList(ArrayList<MusicFiles> musicFilesArrayList) {
         mFiles = new ArrayList<>();
         mFiles.addAll(musicFilesArrayList);
         notifyDataSetChanged();

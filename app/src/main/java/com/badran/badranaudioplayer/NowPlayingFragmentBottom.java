@@ -20,9 +20,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -43,7 +42,6 @@ public class NowPlayingFragmentBottom extends Fragment implements ServiceConnect
     RelativeLayout card_bottom;
     View view;
     MusicService musicService;
-    Bitmap bitmap;
     public static final String MUSIC_LAST_PLAYED = "LAST_PLAYED";
     public static final String MUSIC_FILE = "STORED_MUSIC";
     public static final String ARTIST_NAME = "ARTIST NAME";
@@ -63,7 +61,6 @@ public class NowPlayingFragmentBottom extends Fragment implements ServiceConnect
             @Override
             public void onClick(View view) {
                 if (listSize != 0) {
-                    mIsPlaying = true;
                     Intent intent = new Intent(getContext(), PlayerActivity.class);
                     intent.putExtra("sender", testSender);
                     intent.putExtra("position", testPosition);
@@ -99,14 +96,13 @@ public class NowPlayingFragmentBottom extends Fragment implements ServiceConnect
                         byte[] image = getAlbumArt(PATH_TO_FRAG);
                         if (image != null) {
                             albumArt.setBackgroundResource(0);
-                            bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                            Bitmap resized = Bitmap.createScaledBitmap(bitmap, 500, 500, true);
                             Glide.with(requireContext()).asBitmap()
-                                    .load(ImageHelper.getRoundedCornerBitmap(bitmap, 1000))
+                                    .load(ImageHelper.getRoundedCornerBitmap(resized, 500))
                                     .into(albumArt);
                         }
                         else {
-//                            Drawable drawable = requireContext().getDrawable(R.drawable.b);
-//                            bitmap = ((BitmapDrawable)drawable).getBitmap();
                             albumArt.setBackgroundResource(R.drawable.radius);
                             Glide.with(requireContext())
                                     .load(R.drawable.ic_baseline_play_arrow)
@@ -141,14 +137,13 @@ public class NowPlayingFragmentBottom extends Fragment implements ServiceConnect
                 byte[] image = getAlbumArt(PATH_TO_FRAG);
                 if (image != null) {
                     albumArt.setBackgroundResource(0);
-                    bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    Bitmap resized = Bitmap.createScaledBitmap(bitmap, 500, 500, true);
                     Glide.with(requireContext()).asBitmap()
-                            .load(ImageHelper.getRoundedCornerBitmap(bitmap, 1000))
+                            .load(ImageHelper.getRoundedCornerBitmap(resized, 500))
                             .into(albumArt);
                 }
                 else {
-//                    Drawable drawable = requireContext().getDrawable(R.drawable.b);
-//                    bitmap = ((BitmapDrawable)drawable).getBitmap();
                     albumArt.setBackgroundResource(R.drawable.radius);
                     Glide.with(requireContext())
                             .load(R.drawable.ic_baseline_play_arrow)

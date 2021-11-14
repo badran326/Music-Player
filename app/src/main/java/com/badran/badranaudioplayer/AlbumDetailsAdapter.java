@@ -1,7 +1,9 @@
 package com.badran.badranaudioplayer;
 
+import static com.badran.badranaudioplayer.MainActivity.close;
 import static com.badran.badranaudioplayer.MusicAdapter.db;
 import static com.badran.badranaudioplayer.MusicAdapter.songsCount;
+import static com.badran.badranaudioplayer.PlayerActivity.mIsPlaying;
 
 import android.annotation.SuppressLint;
 import android.content.ContentUris;
@@ -32,9 +34,7 @@ import java.util.ArrayList;
 public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapter.MyHolder> {
 
     private final Context mContext;
-    static ArrayList<MusicFiles> albumFiles;
-    View view;
-    Bitmap bitmap;
+    public static ArrayList<MusicFiles> albumFiles;
 
     public AlbumDetailsAdapter(Context mContext, ArrayList<MusicFiles> albumFiles) {
         this.mContext = mContext;
@@ -44,29 +44,44 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
     @NonNull
     @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.music_items, parent, false);
         return new MyHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.album_name.setText(albumFiles.get(position).getTitle());
-        byte[] image = getAlbumArt(albumFiles.get(position).getPath());
-        if (image != null) {
-            bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            holder.album_image.setBackgroundResource(0);
-            Glide.with(mContext).asBitmap()
-                    .load(ImageHelper.getRoundedCornerBitmap(bitmap, 1000))
-                    .into(holder.album_image);
-        }
-        else {
-//        bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.radius);
-            holder.album_image.setBackgroundResource(R.drawable.radius);
-        Glide.with(mContext)
-                .load(R.drawable.ic_baseline_play_arrow)
-                .into(holder.album_image);
-        }
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                byte[] image = getAlbumArt(albumFiles.get(position).getPath());
+                if (image != null) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    Bitmap resized = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
+                    holder.album_image.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(mContext).asBitmap()
+                                    .load(ImageHelper.getRoundedCornerBitmap(resized, 300))
+                                    .into(holder.album_image);
+                        }
+                    });
+                } else {
+                    holder.album_image.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(mContext)
+                                    .load(R.drawable.ic_baseline_play_arrow)
+                                    .into(holder.album_image);
+                        }
+                    });
+                }
+            }
+        });
+        t1.start();
         holder.itemView.setOnClickListener(view -> {
+            mIsPlaying = true;
+            close = false;
             Intent intent = new Intent(mContext, PlayerActivity.class);
             intent.putExtra("sender", "albumDetails");
             intent.putExtra("position", position);
@@ -89,7 +104,7 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
         });
     }
 
-    private void deleteFile (int position, View view) {
+    private void deleteFile(int position, View view) {
         Uri contentUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, Long.parseLong(albumFiles.get(position).getIds()));
         File file = new File(albumFiles.get(position).getPath());
         boolean deleted = file.delete();
@@ -146,7 +161,7 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
         }
     }
 
-    private byte[] getAlbumArt (String uri) {
+    private byte[] getAlbumArt(String uri) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(uri);
         byte[] art = retriever.getEmbeddedPicture();

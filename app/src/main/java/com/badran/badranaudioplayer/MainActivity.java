@@ -3,6 +3,21 @@ package com.badran.badranaudioplayer;
 
 import static com.badran.badranaudioplayer.PlayerActivity.listSize;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -10,19 +25,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
-
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -37,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
     TextView textView;
     static ArrayList<MusicFiles> musicFiles;
     static ArrayList<MusicFiles> albums = new ArrayList<>();
-    static boolean shuffleBoolean = false, repeatBoolean =false;
+    public static boolean shuffleBoolean = false;
+    public static boolean repeatBoolean = false;
     private final String MY_SORT_PREF = "SortOrder";
     public static final String MUSIC_LAST_PLAYED = "LAST_PLAYED";
     public static final String MUSIC_FILE = "STORED_MUSIC";
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public static String SONG_NAME_TO_FRAG = null;
     public static final String ARTIST_NAME = "ARTIST NAME";
     public static final String SONG_NAME = "SONG NAME";
+    public static boolean close = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(getBaseContext(), MusicService.class));
+    }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(true);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     private void initViewPager() {
         tabLayout = findViewById(R.id.tab_layout);
         viewPager = findViewById(R.id.viewPager);
@@ -98,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences preferences = getSharedPreferences(MY_SORT_PREF, MODE_PRIVATE);
         String sortOrder = preferences.getString("sorting", "sortByDate");
-        ArrayList<String>duplicate = new ArrayList<>();
+        ArrayList<String> duplicate = new ArrayList<>();
         albums.clear();
         ArrayList<MusicFiles> tempAudioList = new ArrayList<>();
 
@@ -125,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         };
         Cursor cursor = context.getContentResolver().query(uri, projection, null, null, order);
         if (cursor != null) {
-            while (cursor.moveToNext()){
+            while (cursor.moveToNext()) {
                 String album = cursor.getString(0);
                 String title = cursor.getString(1);
                 String duration = cursor.getString(2);
@@ -136,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
                 MusicFiles musicFiles = new MusicFiles(path, title, artist, album, duration, id);
                 tempAudioList.add(musicFiles);
-                if (!(duplicate.contains(album))){
+                if (!(duplicate.contains(album))) {
                     albums.add(musicFiles);
                     duplicate.add(album);
                 }
@@ -157,6 +181,13 @@ public class MainActivity extends AppCompatActivity {
                 textView.setText(R.string.app_name);
             }
         });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                close = true;
+                return false;
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -165,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                close = true;
                 String userInput = newText.toLowerCase();
                 ArrayList<MusicFiles> myFile = new ArrayList<>();
                 for (MusicFiles song : musicFiles) {

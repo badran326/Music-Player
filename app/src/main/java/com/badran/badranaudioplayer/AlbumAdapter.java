@@ -25,7 +25,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyHolder> {
 
     private final Context mContext;
     private final ArrayList<MusicFiles> albumFiles;
-    View view;
     Bitmap bitmap;
 
     public AlbumAdapter(Context mContext, ArrayList<MusicFiles> albumFiles) {
@@ -36,28 +35,41 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyHolder> {
     @NonNull
     @Override
     public MyHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        view = LayoutInflater.from(mContext).inflate(R.layout.album_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.album_item, parent, false);
         return new MyHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.album_name.setText(albumFiles.get(position).getAlbum());
-        byte[] image = getAlbumArt(albumFiles.get(position).getPath());
-        if (image != null) {
-            holder.album_image.setBackgroundResource(0);
-            bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            Glide.with(mContext).asBitmap()
-                    .load(ImageHelper.getRoundedCornerBitmap(bitmap, 1000))
-                    .into(holder.album_image);
-        }
-        else {
-//            bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.radius);
-            holder.album_image.setBackgroundResource(R.drawable.radius);
-            Glide.with(mContext)
-                    .load(R.drawable.ic_baseline_play_arrow)
-                    .into(holder.album_image);
-        }
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                byte[] image = getAlbumArt(albumFiles.get(position).getPath());
+                if (image != null) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                    Bitmap resized = Bitmap.createScaledBitmap(bitmap, 700, 700, true);
+                    holder.album_image.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(mContext).asBitmap()
+                                    .load(ImageHelper.getRoundedCornerBitmap(resized, 700))
+                                    .into(holder.album_image);
+                        }
+                    });
+                } else {
+                    holder.album_image.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(mContext)
+                                    .load(R.drawable.ic_baseline_play_arrow)
+                                    .into(holder.album_image);
+                        }
+                    });
+                }
+            }
+        });
+        t1.start();
         holder.itemView.setOnClickListener(view -> {
             mIsPlaying = true;
             Intent intent = new Intent(mContext, AlbumDetails.class);
@@ -83,7 +95,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyHolder> {
         }
     }
 
-    private byte[] getAlbumArt (String uri) {
+    private byte[] getAlbumArt(String uri) {
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(uri);
         byte[] art = retriever.getEmbeddedPicture();

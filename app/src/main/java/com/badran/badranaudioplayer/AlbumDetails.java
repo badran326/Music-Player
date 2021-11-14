@@ -2,14 +2,16 @@ package com.badran.badranaudioplayer;
 
 import static com.badran.badranaudioplayer.MainActivity.musicFiles;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
+import android.os.Bundle;
+import android.widget.ImageView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.media.MediaMetadataRetriever;
-import android.os.Bundle;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
@@ -48,9 +50,10 @@ public class AlbumDetails extends AppCompatActivity {
         }
         byte[] image = getAlbumArt(albumSongs.get(0).getPath());
         if (image != null) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
             albumPhoto.setBackgroundResource(0);
-            Glide.with(this).asBitmap()
-                    .load(image)
+            Glide.with(this)
+                    .load(bitmap)
                     .into(albumPhoto);
         }
         else {
@@ -68,6 +71,7 @@ public class AlbumDetails extends AppCompatActivity {
             albumDetailsAdapter = new AlbumDetailsAdapter(this, albumSongs);
             recyclerView.setAdapter(albumDetailsAdapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+            recyclerView.setSaveEnabled(true);
         }
     }
 

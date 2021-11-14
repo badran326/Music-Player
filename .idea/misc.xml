@@ -31,27 +31,42 @@
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/ic_baseline_skip_next.xml" value="0.202734375" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/ic_baseline_skip_previous.xml" value="0.202734375" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/ic_launcher_background.xml" value="0.202734375" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/ic_menu_camera.xml" value="0.202734375" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.202734375" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.202734375" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/icon.xml" value="0.110546875" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/main_bg.xml" value="0.1" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/music_items.xml" value="0.2703125" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/radius.xml" value="0.202734375" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/selected.xml" value="0.202734375" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/side_nav_bar.xml" value="0.202734375" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/drawable/tab_indicator.xml" value="0.264" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout-v28/activity_main.xml" value="0.25416666666666665" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout-v28/activity_player.xml" value="0.25416666666666665" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout-v28/album_item.xml" value="0.25416666666666665" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/activity_album_details.xml" value="0.2" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/activity_navigation.xml" value="0.190625" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/activity_navigation2.xml" value="0.190625" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/activity_player.xml" value="0.2" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/album_item.xml" value="0.2" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/app_bar_navigation.xml" value="0.190625" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/content_main.xml" value="0.190625" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/content_navigation.xml" value="0.190625" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/fragment_album.xml" value="0.190625" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/fragment_favorite.xml" value="0.190625" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/fragment_gallery.xml" value="0.190625" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/fragment_home.xml" value="0.190625" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/fragment_now_playing_bottom.xml" value="0.16319444444444445" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/fragment_songs.xml" value="0.2" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/fragment_test.xml" value="0.190625" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/music.xml" value="0.190625" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/music_items.xml" value="0.2" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/nav_header_navigation.xml" value="0.190625" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/layout/navigitoin.xml" value="0.190625" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/menu/activity_main_drawer.xml" value="0.190625" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/menu/back_btn.xml" value="0.190625" />
+        <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/menu/navigation_.xml" value="0.1" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/menu/popup.xml" value="0.190625" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/menu/search.xml" value="0.190625" />
         <entry key="..\:/projc/projc3/MyAudioPlayer/app/src/main/res/mipmap-anydpi-v26/ic_badran.xml" value="0.110546875" />

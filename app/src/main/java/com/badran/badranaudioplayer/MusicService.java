@@ -28,6 +28,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import java.util.ArrayList;
 
@@ -87,10 +88,17 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     }
 
     public class MyBinder extends Binder {
-        MusicService getService() {
+        public MusicService getService() {
             return MusicService.this;
         }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        NotificationManagerCompat nmc = NotificationManagerCompat.from(getBaseContext());
+        nmc.cancel(10);
     }
 
     @Override
@@ -139,35 +147,37 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         }
     }
 
-    void start() {
+    public void start() {
+        mIsPlaying = true;
         mediaPlayer.start();
     }
 
-    boolean isPlaying() {
+    public boolean isPlaying() {
         return mediaPlayer.isPlaying();
     }
 
-    void stop() {
+    public void stop() {
+        mIsPlaying = false;
         mediaPlayer.stop();
     }
 
-    void release() {
+    public void release() {
         mediaPlayer.release();
     }
 
-    int getDuration() {
+    public int getDuration() {
         return mediaPlayer.getDuration();
     }
 
-    void seekTo(int position) {
+    public void seekTo(int position) {
         mediaPlayer.seekTo(position);
     }
 
-    int getCurrentPosition() {
+    public int getCurrentPosition() {
         return mediaPlayer.getCurrentPosition();
     }
 
-    void createMediaPlayer(int positionInner) {
+    public void createMediaPlayer(int positionInner) {
         position = positionInner;
         uri = Uri.parse(musicFiles.get(position).getPath());
         SharedPreferences.Editor editor = getSharedPreferences(MUSIC_LAST_PLAYED, MODE_PRIVATE).edit();
@@ -178,31 +188,37 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         mediaPlayer = MediaPlayer.create(getBaseContext(), uri);
     }
 
-    void pause() {
+    public void pause() {
+        mIsPlaying = false;
         mediaPlayer.pause();
     }
 
-    void OnCompleted() {
+    public void OnCompleted() {
         mediaPlayer.setOnCompletionListener(this);
+        mIsPlaying = true;
+        showNotification();
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if (actionPlaying != null) {
-            actionPlaying.nextBtnClicked();
-        }
-        if (mediaPlayer != null) {
-            createMediaPlayer(position);
-            mediaPlayer.start();
-            OnCompleted();
+        if (mIsPlaying) {
+            if (actionPlaying != null) {
+                actionPlaying.nextBtnClicked();
+            }
+            if (mediaPlayer != null) {
+                createMediaPlayer(position);
+                mediaPlayer.start();
+                OnCompleted();
+            }
         }
     }
 
-    void setCallBack(ActionPlaying actionPlaying) {
+    public void setCallBack(ActionPlaying actionPlaying) {
         this.actionPlaying = actionPlaying;
     }
 
-    void showNotification() {
+    public void showNotification() {
+        mIsPlaying = mediaPlayer.isPlaying();
         if (mIsPlaying) {
             playPauseBtnInt = R.drawable.ic_baseline_pause;
         } else {
@@ -234,7 +250,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
         } else {
             thumb = BitmapFactory.decodeResource(getResources(), R.drawable.b);
         }
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID_2)
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID_2)
                 .setSmallIcon(playPauseBtnInt)
                 .setLargeIcon(thumb)
                 .setContentTitle(musicFiles.get(position).getTitle())
@@ -248,8 +264,10 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setOnlyAlertOnce(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .build();
-        startForeground(1, notification);
+                .setOngoing(mIsPlaying);
+
+        NotificationManagerCompat nmc = NotificationManagerCompat.from(this);
+        nmc.notify(10, notification.build());
     }
 
     private byte[] getAlbumArt(String uri) {
@@ -263,21 +281,18 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     void nextBtnClicked() {
         if (actionPlaying != null) {
             actionPlaying.nextBtnClicked();
-            showNotification();
         }
     }
 
     void prevBtnClicked() {
         if (actionPlaying != null) {
             actionPlaying.prevBtnClicked();
-            showNotification();
         }
     }
 
     void playPauseBtnClicked() {
         if (actionPlaying != null) {
             actionPlaying.playPauseBtnClicked();
-            showNotification();
         }
     }
 

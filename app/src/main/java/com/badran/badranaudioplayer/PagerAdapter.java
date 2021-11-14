@@ -10,10 +10,9 @@ import java.util.ArrayList;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
-    ArrayList<MyTabs> myTabs;
+    ArrayList<MyTabs> myTabs = new ArrayList<>();
     public PagerAdapter(@NonNull FragmentManager fm) {
         super(fm);
-        this.myTabs = new ArrayList<>();
     }
 
     public void addTab(MyTabs tab) {

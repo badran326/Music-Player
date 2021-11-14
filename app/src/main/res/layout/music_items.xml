@@ -20,9 +20,9 @@
 
     <ImageView
         android:id="@+id/music_img"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/radius"/>
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="fitCenter"/>
 
     <TextView
         android:id="@+id/music_file_nam"
